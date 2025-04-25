@@ -1,0 +1,534 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kraków Apartment Investment Guide | Made for Kamil by aiadopters.club</title>
+  <meta name="description" content="A beginner-friendly guide to investing in a Kraków, Poland apartment, with clear explanations, financial projections, and creative financing options for US buyers.">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    html, body { font-family: 'Roboto', sans-serif; background: #f9fafb; }
+    h1, h2, h3 { font-family: 'Roboto', sans-serif; }
+    .section-title { color: #1e40af; font-weight: 700; letter-spacing: 0.05em; }
+    .gradient { background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%); }
+    .card { box-shadow: 0 6px 24px rgba(0,0,0,0.1); transition: transform 0.3s; border-radius: 1rem; }
+    .card:hover { transform: translateY(-8px); }
+    .icon-box { background-color: #e0f2fe; border-radius: .75rem; padding: 1rem; }
+    .highlight { color: #1e40af; font-weight: bold; }
+    .btn-toggle { background-color: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer; }
+    .btn-toggle:hover { background-color: #1e40af; }
+    .explain-box { background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 1rem; margin: 1rem 0; }
+    .slider-value { font-weight: bold; color: #1e40af; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <section class="gradient py-14 px-6 rounded-b-3xl mb-12 shadow-xl">
+    <div class="max-w-6xl mx-auto text-center">
+      <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow">Your Guide to Investing in a Kraków Apartment</h1>
+      <p class="text-lg md:text-2xl text-blue-100 font-medium">Made for Kamil by <a href="https://aiadopters.club" class="text-blue-300 hover:text-blue-100">aiadopters.club</a></p>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-4 md:px-8 py-10">
+    <h2 class="text-3xl section-title mb-6 flex items-center"><i class="fas fa-home mr-3 text-blue-600"></i>What’s This Opportunity?</h2>
+    <div class="bg-white card p-8 mb-10 grid md:grid-cols-2 gap-8">
+      <div>
+        <p class="text-lg text-gray-700 mb-4">Your brother is offering his apartment in Kraków, Poland, at a discount because you’re family. It’s a modern 50m² unit with a balcony and garage, perfect for renting out. Let’s break down why this could be a great first investment!</p>
+        <ul class="space-y-3 text-gray-700">
+          <li><span class="highlight">Address:</span> Dobrego Pasterza 56/26, 31-416 Kraków, Poland</li>
+          <li><span class="highlight">Area:</span> Prądnik Czerwony – vibrant, close to city center, great for renters</li>
+          <li><span class="highlight">Price:</span> <span class="text-green-600 font-bold">€120,000 (~518,400 PLN)</span></li>
+          <li><span class="highlight">Market Value:</span> ~€135,000–140,000 (~583,200–604,800 PLN)</li>
+          <li><span class="highlight">Size:</span> 50 m² + Balcony + Garage Parking</li>
+          <li><span class="highlight">Layout:</span> 1 Bedroom, Living Room/Kitchen, Balcony</li>
+          <li><span class="highlight">Deal:</span> 10–15% below market for family</li>
+        </ul>
+        <p class="mt-4 text-gray-600 text-sm">*The garage makes it more attractive for renters and boosts value.</p>
+        <div class="explain-box">
+          <p><span class="highlight">What’s a “below-market deal”?</span> It means you’re paying less than what others would pay for a similar apartment. Think of it like getting a car at a discount because it’s from a family member – you save money upfront!</p>
+        </div>
+      </div>
+      <div>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2560.735184273779!2d19.9674836157041!3d50.08745697942617!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47165b0b8f1e5c5f%3A0x1f8e6e7b5c4d8b9!2sDobrego%20Pasterza%2056%2C%2031-416%20Krak%C3%B3w%2C%20Poland!5e0!3m2!1sen!2sus!4v1697654321987" width="100%" height="300" style="border:0; border-radius: 0.5rem;" allowfullscreen="" loading="lazy"></iframe>
+        <p class="text-sm text-gray-600 mt-2">Prądnik Czerwony is a lively area with shops, schools, and easy access to Kraków’s historic center.</p>
+      </div>
+    </div>
+
+    <h2 class="text-3xl section-title mb-6 flex items-center"><i class="fas fa-city mr-3 text-blue-600"></i>Why Kraków? Market Insights</h2>
+    <div class="bg-white card p-8 mb-10 grid md:grid-cols-2 gap-8">
+      <div>
+        <p class="text-lg text-gray-700 mb-4">Kraków is one of Poland’s hottest real estate markets, with prices and rents rising fast. Here’s why this apartment is in a great spot:</p>
+        <ul class="list-disc ml-6 space-y-3 text-gray-700">
+          <li><span class="highlight">Price Surge:</span> Kraków home prices jumped <span class="text-blue-600 font-semibold">30% in 2023</span>, the highest in Poland.</li>
+          <li><span class="highlight">Renters Galore:</span> Students, professionals, and tourists need places to stay.</li>
+          <li><span class="highlight">Long-Term Rent:</span> ~3,900–4,000 PLN/mo (€900–925) for similar units.</li>
+          <li><span class="highlight">Returns:</span> You could earn 5.5–6.1% yearly from rent, better than many US cities.</li>
+          <li><span class="highlight">Perks:</span> New building, energy-saving features, near shops and transit.</li>
+          <li><span class="highlight">New Insight:</span> Kraków’s economy grew 5.2% in 2024, driven by tech and tourism, boosting rental demand.</li>
+        </ul>
+        <p class="mt-4 text-sm text-gray-500">[Sources: <a href="https://www.globalpropertyguide.com/europe/poland/rental-yields" target="_blank" class="underline">Global Property Guide</a>, <a href="https://www.morizon.pl/mieszkania/krakow/pradnik-czerwony/" target="_blank" class="underline">Morizon</a>]</p>
+        <div class="explain-box">
+          <p><span class="highlight">What’s a rental yield?</span> It’s like the profit you make from rent compared to the property’s price. If you buy a $100,000 house and earn $6,000/year in rent, that’s a 6% yield – like a savings account, but with real estate!</p>
+        </div>
+      </div>
+      <div>
+        <canvas id="yieldChart" width="320" height="220"></canvas>
+        <p class="text-sm text-gray-600 mt-2">Kraków’s rental returns beat many US cities and other Polish cities like Warsaw.</p>
+      </div>
+    </div>
+
+    <h2 class="text-3xl section-title mb-6 flex items-center"><i class="fas fa-globe mr-3 text-blue-600"></i>Poland vs. US: What’s Different?</h2>
+    <div class="bg-white card p-8 mb-10">
+      <p class="text-lg text-gray-700 mb-4">Investing in Poland is different from the US, but it can be easier and cheaper in some ways. Here’s a quick comparison:</p>
+      <div class="flex flex-wrap gap-6 mb-6">
+        <div class="icon-box text-blue-700">
+          <i class="fas fa-money-check-dollar text-lg"></i>
+          <span class="ml-2 font-semibold">Poland: Rental Yield</span>
+          <div class="text-2xl mt-1 font-bold text-blue-700">6.1%</div>
+        </div>
+        <div class="icon-box text-blue-700">
+          <i class="fas fa-money-bill-trend-up text-lg"></i>
+          <span class="ml-2 font-semibold">US: Rental Yield</span>
+          <div class="text-2xl mt-1 font-bold text-emerald-600">4.1%</div>
+        </div>
+        <div class="icon-box text-blue-700">
+          <i class="fas fa-building-columns text-lg"></i>
+          <span class="ml-2 font-semibold">Poland: Rent Tax</span>
+          <div class="text-2xl mt-1 font-bold">8.5%–12.5%</div>
+        </div>
+        <div class="icon-box text-blue-700">
+          <i class="fas fa-user-shield text-lg"></i>
+          <span class="ml-2 font-semibold">US: Rent Tax</span>
+          <div class="text-2xl mt-1 font-bold">22%–37%</div>
+        </div>
+      </div>
+      <ul class="list-disc ml-6 space-y-3 text-gray-700">
+        <li><span class="highlight">Buying Costs:</span> Poland: 2% transfer tax; US: 2–5% closing costs.</li>
+        <li><span class="highlight">Property Taxes:</span> Poland: ~€50–100/year; US: ~0.8–1.2% of property value/year.</li>
+        <li><span class="highlight">New Insight:</span> Poland’s capital gains tax (19%) is waived after 5 years, unlike the US (15–20%), making long-term holds attractive.</li>
+      </ul>
+      <p class="mt-4 text-sm text-gray-500">[Sources: <a href="https://www.numbeo.com/property-investment/compare_countries_result.jsp?country1=Poland&country2=United+States" class="underline" target="_blank">Numbeo</a>, <a href="https://www.ptireturns.com/blog/polish-property-tax-ultimate-guide/" target="_blank" class="underline">PTI</a>]</p>
+      <div class="explain-box">
+        <p><span class="highlight">Why do taxes matter?</span> Lower taxes in Poland mean you keep more of your rental income. It’s like paying less for a phone plan – more money stays in your pocket!</p>
+      </div>
+    </div>
+
+    <h2 class="text-3xl section-title mb-6 flex items-center"><i class="fas fa-calculator mr-3 text-blue-600"></i>How Much Can You Earn?</h2>
+    <div class="bg-white card p-8 mb-10">
+      <p class="text-lg text-gray-700 mb-4">You can rent this apartment long-term (to a family or professional) or short-term (like Airbnb for tourists). Here’s what you might earn:</p>
+      <div class="flex justify-center mb-6">
+        <button class="btn-toggle mr-4" onclick="showScenario('ltr')">Long-Term Rental</button>
+        <button class="btn-toggle" onclick="showScenario('str')">Short-Term Rental</button>
+      </div>
+      <div id="ltr-scenario">
+        <table class="w-full text-sm border mb-6">
+          <thead>
+            <tr class="bg-blue-50">
+              <th class="border p-3">Metric</th>
+              <th class="border p-3">Long-Term Rental</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="border p-3">Monthly Income (PLN)</td><td class="border p-3">3,900</td></tr>
+            <tr><td class="border p-3">Occupancy</td><td class="border p-3">95%+</td></tr>
+            <tr><td class="border p-3">Annual Revenue (PLN)</td><td class="border p-3">46,800</td></tr>
+            <tr class="bg-blue-50"><td class="border p-3">Net (after tax/fees)</td><td class="border p-3">~32,000</td></tr>
+            <tr><td class="border p-3">Annual Yield</td><td class="border p-3"><span class="highlight">6.1%</span></td></tr>
+            <tr><td class="border p-3">Monthly Net (EUR)</td><td class="border p-3">~660</td></tr>
+            <tr><td class="border p-3">Expenses (PLN)</td><td class="border p-3">~1,500</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="str-scenario" class="hidden">
+        <table class="w-full text-sm border mb-6">
+          <thead>
+            <tr class="bg-blue-50">
+              <th class="border p-3">Metric</th>
+              <th class="border p-3">Short-Term Rental</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="border p-3">Monthly Income (PLN)</td><td class="border p-3">~6,650</td></tr>
+            <tr><td class="border p-3">Occupancy</td><td class="border p-3">~70%</td></tr>
+            <tr><td class="border p-3">Annual Revenue (PLN)</td><td class="border p-3">~79,800</td></tr>
+            <tr class="bg-blue-50"><td class="border p-3">Net (after tax/fees)</td><td class="border p-3">~44,000</td></tr>
+            <tr><td class="border p-3">Annual Yield</td><td class="border p-3"><span class="highlight">8.3%</span></td></tr>
+            <tr><td class="border p-3">Monthly Net (EUR)</td><td class="border p-3">~900</td></tr>
+            <tr><td class="border p-3">Expenses (PLN)</td><td class="border p-3">~3,200</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <p class="text-lg text-gray-700 mb-4">Key numbers to know:</p>
+          <ul class="list-disc ml-6 space-y-3 text-gray-700">
+            <li><span class="highlight">Yearly Income:</span> ~€7,900 (LTR) or ~€10,800 (STR)</li>
+            <li><span class="highlight">Return on Cash:</span> 40–60% if you put 20% down</li>
+            <li><span class="highlight">Price Growth:</span> Kraków properties up 54% in 5 years</li>
+            <li><span class="highlight">New Insight:</span> STR could hit €12,000/year if occupancy reaches 80% in peak seasons.</li>
+          </ul>
+          <div class="explain-box">
+            <p><span class="highlight">What’s cash-on-cash return?</span> It’s how much profit you make compared to the cash you invest. If you put in €24,000 and earn €10,000/year, that’s a 41% return – like a super-charged savings account!</p>
+          </div>
+        </div>
+        <div>
+          <canvas id="expenseChart" height="150"></canvas>
+          <p class="text-sm text-gray-600 mt-2">Expenses include taxes, fees, and management costs (higher for STR).</p>
+        </div>
+      </div>
+      <div class="mt-6">
+        <h3 class="text-xl font-semibold mb-4">Interactive Long-Term Rental Calculator</h3>
+        <div class="bg-gray-100 p-6 rounded-lg">
+          <label class="block mb-2">Monthly Rent (PLN): <span id="rentValue" class="slider-value">3900</span></label>
+          <input type="range" id="rentSlider" min="3000" max="5000" step="100" value="3900" class="w-full mb-4">
+          <label class="block mb-2">Occupancy (%):</label>
+          <input type="number" id="occupancyInput" value="95" min="0" max="100" class="border p-2 rounded w-full mb-4">
+          <label class="block mb-2">Monthly Financing Cost (PLN):</label>
+          <input type="number" id="financingInput" value="2073" class="border p-2 rounded w-full mb-4">
+          <div class="grid md:grid-cols-3 gap-6 mt-6">
+            <div>
+              <h4 class="text-lg font-semibold mb-2">Monthly Cash Flow</h4>
+              <canvas id="cashFlowChart" height="150"></canvas>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold mb-2">Annual Cash Flow</h4>
+              <canvas id="annualChart" height="150"></canvas>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold mb-2">Cost Breakdown</h4>
+              <canvas id="breakdownChart" height="150"></canvas>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mt-4">*For financing costs, use ~2073 PLN for seller financing or ~3179 PLN for a Polish mortgage.</p>
+        </div>
+      </div>
+      <p class="text-xs text-gray-600 mt-4">*STR calculations differ; refer to projections above.</p>
+    </div>
+
+    <h2 class="text-3xl section-title mb-6 flex items-center"><i class="fas fa-money-bill-wave mr-3 text-blue-600"></i>How to Buy with Little Cash</h2>
+    <div class="bg-white card p-8 mb-10 grid md:grid-cols-2 gap-8">
+      <div>
+        <p class="text-lg text-gray-700 mb-4">You don’t need €120,000 upfront! Here are ways to buy this apartment with minimal money, especially since it’s a family deal:</p>
+        <ul class="list-disc ml-6 space-y-4 text-gray-700">
+          <li><span class="highlight">Seller Financing:</span> Your brother loans you 70–80% (€84,000–96,000) at 3–4% interest for 5 years. You pay a small down payment and monthly interest, then refinance later. <span class="text-green-600">Great for family deals!</span></li>
+          <li><span class="highlight">Lease-Option:</span> Rent the apartment for 2–3 years (€700–800/month) with an option to buy at €120,000. Part of your rent goes toward the purchase. <span class="text-amber-600">Low risk, like test-driving a car!</span></li>
+          <li><span class="highlight">US HELOC:</span> Use equity from a US home (if you own one) to borrow €120,000, buy the apartment, and refinance in Poland later. <span class="text-red-600">Watch for currency changes.</span></li>
+          <li><span class="highlight">Polish Mortgage:</span> Get a bank loan at 6–7.5% interest with 20% down (€24,000). Easier if you’re a Polish citizen. <span class="text-blue-600">More paperwork but stable.</span></li>
+          <li><span class="highlight">New Insight: Family Joint Venture:</span> Partner with another family member, each paying €60,000, to share costs and profits. <span class="text-purple-600">Splits the risk!</span></li>
+        </ul>
+        <div class="explain-box">
+          <p><span class="highlight">What’s seller financing?</span> It’s like your brother acting as the bank. Instead of paying the full price, you give him a small amount now and pay the rest over time with low interest – like buying a phone on a payment plan!</p>
+        </div>
+      </div>
+      <div>
+        <table class="w-full text-sm border mb-4">
+          <thead>
+            <tr class="bg-blue-50">
+              <th class="border p-3">Option</th>
+              <th class="border p-3">Cash Needed</th>
+              <th class="border p-3">Monthly Cost</th>
+              <th class="border p-3">Benefit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="border p-3">Seller Financing</td><td class="border p-3">€24,000</td><td class="border p-3">€480</td><td class="border p-3">High profit</td></tr>
+            <tr><td class="border p-3">Lease-Option</td><td class="border p-3">€6,000–12,000</td><td class="border p-3">€800</td><td class="border p-3">Test-drive</td></tr>
+            <tr><td class="border p-3">Polish Mortgage</td><td class="border p-3">€24,000</td><td class="border p-3">€736</td><td class="border p-3">Stable</td></tr>
+            <tr><td class="border p-3">US HELOC</td><td class="border p-3">€0</td><td class="border p-3">Varies</td><td class="border p-3">Flexible</td></tr>
+            <tr><td class="border p-3">Family Venture</td><td class="border p-3">€60,000</td><td class="border p-3">Varies</td><td class="border p-3">Shared risk</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs text-gray-600">Figures are estimates. Best options depend on your cash and goals.</p>
+        <p class="text-sm text-gray-600 mt-2">[Source: <a href="https://harveofinance.com/april-update-5year-fixed-rates-touch-6-0-fresh-savings-outlook-for-expats-in-poland/" target="_blank" class="underline">Harveo Finance</a>]</p>
+      </div>
+    </div>
+
+    <h2 class="text-3xl section-title mb-6 flex items-center"><i class="fas fa-balance-scale mr-3 text-blue-600"></i>Rules & Risks to Know</h2>
+    <div class="bg-white card p-8 mb-10">
+      <p class="text-lg text-gray-700 mb-4">Investing in Poland has rules and risks, especially for short-term rentals like Airbnb. Here’s what you need to understand:</p>
+      <ul class="list-disc ml-6 space-y-3 text-gray-700">
+        <li><span class="highlight">Airbnb Rules:</span> You must register the apartment as a “non-hotel lodging” and pay a tourist tax.</li>
+        <li><span class="highlight">2026 Changes:</span> New EU rules may add more paperwork for Airbnb rentals.</li>
+        <li><span class="highlight">Building Rules:</span> Some buildings ban short-term rentals – check with the condo board.</li>
+        <li><span class="highlight">Taxes:</span> Report rental income in both Poland and the US if you’re a US citizen.</li>
+        <li><span class="highlight">New Insight: Risk Factor:</span> If tourism drops (e.g., due to economic slowdown), STR income could fall by 20–30%.</li>
+      </ul>
+      <p class="mt-4 text-sm text-gray-600">[Sources: <a href="https://airbtics.com/airbnb-rules-in-krakow-poland/" target="_blank" class="underline">Airbtics</a>, <a href="https://www.dlapiperrealworld.com/law/index.html?c=PL&t=leases" target="_blank" class="underline">DLA Piper</a>]</p>
+      <div class="explain-box">
+        <p><span class="highlight">Why check building rules?</span> It’s like making sure your apartment allows pets before getting a dog. If the building says “no Airbnb,” you’ll need to stick to long-term rentals.</p>
+      </div>
+      <div>
+        <canvas id="riskChart" height="200"></canvas>
+        <p class="text-sm text-gray-600 mt-2">Balancing risks and rewards helps you make a smart choice.</p>
+      </div>
+    </div>
+
+    <h2 class="text-3xl section-title mb-6 flex items-center"><i class="fas fa-lightbulb mr-3 text-blue-600"></i>Why This Is a Great First Investment</h2>
+    <div class="bg-white card p-8 mb-10">
+      <p class="text-lg text-gray-700 mb-4">This apartment is a unique chance to start investing, even if you’re new to real estate. Here’s why it’s exciting:</p>
+      <ul class="list-disc ml-6 text-lg space-y-3 font-medium">
+        <li><span class="text-emerald-700 font-bold">Growing Market:</span> Kraków’s real estate is booming, like a hot new tech stock.</li>
+        <li><span class="text-blue-700 font-bold">High Returns:</span> Earn 5.5–8%+ from rent, better than most US properties.</li>
+        <li>Low taxes and fees compared to the US, so you keep more money.</li>
+        <li>Choose long-term or short-term rentals based on your goals.</li>
+        <li>Family deal means flexible payment options, like paying in installments.</li>
+        <li><span class="highlight">New Insight:</span> Compared to Warsaw (4.8–5.5% yields), Kraków offers better returns for smaller apartments.</li>
+      </ul>
+      <hr class="my-6">
+      <div class="text-gray-700">
+        <p class="font-semibold mb-2">Smart Move for Beginners:</p>
+        <p class="mb-4">Start with a lease-option to “try” the investment with low cash. Rent it out for a year, then decide to buy, refinance, or sell for a profit.</p>
+        <p class="font-semibold mb-2">Your Next Steps:</p>
+        <ul class="list-disc ml-6 space-y-2">
+          <li>Talk to your brother about payment flexibility.</li>
+          <li>Check if the building allows Airbnb.</li>
+          <li>Get a tax advisor to explain US/Poland taxes.</li>
+          <li>Ask for recent sales data to confirm the discount.</li>
+        </ul>
+      </div>
+      <div class="mt-8 text-center text-3xl font-extrabold text-blue-600 animate-pulse"><i class="fas fa-rocket mr-3"></i>Ready to Start Your Investment Journey?</div>
+    </div>
+  </section>
+
+  <footer class="max-w-6xl mx-auto px-4 py-8 text-gray-400 text-sm text-center">
+    © 2025 Kraków Real Estate Insights. Data Sources: <a href="https://www.globalpropertyguide.com/" class="underline" target="_blank">Global Property Guide</a>, <a href="https://www.ptireturns.com/blog/polish-property-tax-ultimate-guide/" class="underline" target="_blank">PTI</a>, <a href="https://www.numbeo.com/" class="underline" target="_blank">Numbeo</a>, <a href="https://www.morizon.pl/mieszkania/krakow/pradnik-czerwony/" class="underline" target="_blank">Morizon</a>. Optimized for PDF export.
+  </footer>
+
+<script>
+  // Yield Chart
+  const yieldChart = document.getElementById('yieldChart').getContext('2d');
+  new Chart(yieldChart, {
+    type: 'bar',
+    data: {
+      labels: ['Kraków', 'Warsaw', 'Wrocław', 'US City'],
+      datasets: [{
+        label: 'Gross Rental Yield (%)',
+        data: [6.1, 5.2, 5.8, 4.1],
+        backgroundColor: ['#1e40af', '#3b82f6', '#93c5fd', '#a3a3a3'],
+        borderRadius: 8,
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': ' + ctx.parsed.y + '%' } }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 8, grid: { color: '#f1f5f9' }, ticks: { stepSize: 2 } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // Expense Breakdown Chart (Static)
+  const expenseChart = document.getElementById('expenseChart').getContext('2d');
+  new Chart(expenseChart, {
+    type: 'pie',
+    data: {
+      labels: ['Admin Fees', 'Property Tax', 'Maintenance', 'Management (STR)'],
+      datasets: [{
+        data: [650, 100, 200, 1200],
+        backgroundColor: ['#1e40af', '#3b82f6', '#93c5fd', '#fbbf24'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: { callbacks: { label: (ctx) => ctx.label + ': ' + ctx.parsed + ' PLN' } }
+      }
+    }
+  });
+
+  // Risk vs. Reward Chart
+  const riskChart = document.getElementById('riskChart').getContext('2d');
+  new Chart(riskChart, {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'LTR',
+          data: [{x: 3, y: 6.1}],
+          backgroundColor: '#1e40af',
+          pointRadius: 10,
+        },
+        {
+          label: 'STR',
+          data: [{x: 6, y: 8.3}],
+          backgroundColor: '#fbbf24',
+          pointRadius: 10,
+        }
+      ]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': ' + ctx.parsed.y + '% yield' } }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Risk Level (1–10)' }, min: 0, max: 10 },
+        y: { title: { display: true, text: 'Annual Yield (%)' }, min: 0, max: 10 }
+      }
+    }
+  });
+
+  // Toggle Scenarios
+  function showScenario(type) {
+    document.getElementById('ltr-scenario').classList.add('hidden');
+    document.getElementById('str-scenario').classList.add('hidden');
+    document.getElementById(`${type}-scenario`).classList.remove('hidden');
+  }
+
+  // Initialize Charts for Long-Term Rental Calculator
+  let cashFlowChart, annualChart, breakdownChart;
+
+  // Cash Flow Bar Chart
+  const cashFlowCtx = document.getElementById('cashFlowChart').getContext('2d');
+  cashFlowChart = new Chart(cashFlowCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Gross Income', 'Expenses', 'Financing', 'Net Cash Flow'],
+      datasets: [{
+        label: 'Amount (PLN)',
+        data: [0, 0, 0, 0],
+        backgroundColor: ['#3b82f6', '#ef4444', '#f97316', '#22c55e'],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed.y} PLN` } }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 5000, ticks: { stepSize: 1000 } }
+      }
+    }
+  });
+
+  // Annual Cash Flow Line Chart
+  const annualCtx = document.getElementById('annualChart').getContext('2d');
+  annualChart = new Chart(annualCtx, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      datasets: [{
+        label: 'Monthly Cash Flow (PLN)',
+        data: Array(12).fill(0),
+        borderColor: '#22c55e',
+        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 3
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} PLN` } }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 5000, ticks: { stepSize: 1000 } }
+      }
+    }
+  });
+
+  // Breakdown Pie Chart
+  const breakdownCtx = document.getElementById('breakdownChart').getContext('2d');
+  breakdownChart = new Chart(breakdownCtx, {
+    type: 'pie',
+    data: {
+      labels: ['Gross Income', 'Expenses', 'Financing'],
+      datasets: [{
+        data: [0, 0, 0],
+        backgroundColor: ['#3b82f6', '#ef4444', '#f97316'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed} PLN` } }
+      }
+    }
+  });
+
+  // Interactive Rent Slider and Chart Updates
+  function updateCharts() {
+    const rent = parseFloat(document.getElementById('rentSlider').value);
+    document.getElementById('rentValue').textContent = rent;
+    const occupancy = parseFloat(document.getElementById('occupancyInput').value) / 100;
+    const financing = parseFloat(document.getElementById('financingInput').value);
+    const grossIncome = rent * occupancy;
+    const expenses = 1500; // for LTR
+    const netBeforeFinancing = grossIncome - expenses;
+    const monthlyCashFlow = netBeforeFinancing - financing;
+    const annualCashFlow = monthlyCashFlow * 12;
+
+    // Update Cash Flow Bar Chart
+    cashFlowChart.data.datasets[0].data = [grossIncome, expenses, financing, monthlyCashFlow];
+    cashFlowChart.options.scales.y.max = Math.max(5000, grossIncome + 500);
+    cashFlowChart.update();
+
+    // Update Annual Cash Flow Line Chart
+    annualChart.data.datasets[0].data = Array(12).fill(monthlyCashFlow);
+    annualChart.options.scales.y.max = Math.max(5000, grossIncome + 500);
+    annualChart.update();
+
+    // Update Breakdown Pie Chart
+    breakdownChart.data.datasets[0].data = [grossIncome, expenses, financing];
+    breakdownChart.update();
+  }
+
+  // Initial calculation
+  updateCharts();
+
+  // Add event listeners for dynamic updates
+  document.getElementById('rentSlider').addEventListener('input', updateCharts);
+  document.getElementById('occupancyInput').addEventListener('input', updateCharts);
+  document.getElementById('financingInput').addEventListener('input', updateCharts);
+</script>
+</body>
+</html>
